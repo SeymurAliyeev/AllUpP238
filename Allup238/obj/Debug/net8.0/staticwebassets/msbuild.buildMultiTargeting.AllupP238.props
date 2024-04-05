@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\AllupP238.props" />
+</Project>
