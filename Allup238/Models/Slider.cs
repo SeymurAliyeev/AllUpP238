@@ -6,21 +6,24 @@ namespace AllupP238.Models
     public class Slider: BaseEntity
     {
         [Required]
-        [StringLength(20)]
-        public string Title1 { get; set; }
-        [Required]
-        [StringLength(20)]
-        public string Title2 { get; set; }
-        [Required]
-        [StringLength(150)]
-        public string Desc { get; set; }
-        public string? RedirectUrl { get; set; }
-        [Required]
-        [StringLength(40)]
-        public string RedirectUrlText { get; set; }
-        [StringLength(100)]
+        [StringLength(30)]
+        public string Title { get; set; }
+
+        [StringLength(50)]
+        public string? Description { get; set; }
+
+        [StringLength(250)]
         public string? ImageUrl { get; set; }
+
         [NotMapped]
+        [Display(Name = "Upload Image")]
+
         public IFormFile? ImageFile { get; set; }
+
+        [StringLength(40)]
+        public string? ButtonText { get; set; }
+
+        [StringLength(250)]
+        public string? ButtonUrl { get; set; }
     }
 }

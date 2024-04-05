@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "GdqLJl2SNg0YnVf+YWcgY+1YP1GykptuIVsReGlm21k=",
+  "Hash": "3XzMdgKARcAlZpwDF4ZTaYbjZHMowJ0NCuSCu9JJqCo=",
   "Source": "AllupP238",
   "BasePath": "_content/AllupP238",
   "Mode": "Default",
@@ -39307,6 +39307,44 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Identity": "C:\\Users\\user\\Desktop\\AllupP238\\Allup238\\wwwroot\\uploads\\sliders\\a9ec8ebb-b4be-4b19-8628-544b8e1bccc6_WhatsApp Image 2024-03-30 at 15.39.13 (1).jpeg",
+      "SourceId": "AllupP238",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\user\\Desktop\\AllupP238\\Allup238\\wwwroot\\",
+      "BasePath": "_content/AllupP238",
+      "RelativePath": "uploads/sliders/a9ec8ebb-b4be-4b19-8628-544b8e1bccc6_WhatsApp Image 2024-03-30 at 15.39.13 (1).jpeg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\sliders\\a9ec8ebb-b4be-4b19-8628-544b8e1bccc6_WhatsApp Image 2024-03-30 at 15.39.13 (1).jpeg"
+    },
+    {
+      "Identity": "C:\\Users\\user\\Desktop\\AllupP238\\Allup238\\wwwroot\\uploads\\sliders\\c8982ff4-f3e7-434b-90d0-fd0d981fa1ca_WhatsApp Image 2024-03-30 at 15.39.25.jpeg",
+      "SourceId": "AllupP238",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\user\\Desktop\\AllupP238\\Allup238\\wwwroot\\",
+      "BasePath": "_content/AllupP238",
+      "RelativePath": "uploads/sliders/c8982ff4-f3e7-434b-90d0-fd0d981fa1ca_WhatsApp Image 2024-03-30 at 15.39.25.jpeg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\sliders\\c8982ff4-f3e7-434b-90d0-fd0d981fa1ca_WhatsApp Image 2024-03-30 at 15.39.25.jpeg"
     }
   ]
 }

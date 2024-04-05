@@ -1,3 +1,4 @@
+using AllupMVC;
 using AllupP238.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,12 +6,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
 builder.Services.AddDbContext<AllupDbContext>(opt =>
 {
-    opt.UseSqlServer("Server=.;Database=AllUpDB;Trusted_Connection=True;TrustServerCertificate=True;");
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("default"));
 });
 
+//builder.Services.AddServices();
+builder.Services.AddServices();
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -22,18 +27,16 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
