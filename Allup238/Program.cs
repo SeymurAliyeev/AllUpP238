@@ -1,7 +1,14 @@
+using AllupP238.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<AllupDbContext>(opt =>
+{
+    opt.UseSqlServer("Server=.;Database=AllUpDB;Trusted_Connection=True;TrustServerCertificate=True;");
+});
 
 var app = builder.Build();
 
