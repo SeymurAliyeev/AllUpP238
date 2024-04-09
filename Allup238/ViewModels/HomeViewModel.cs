@@ -1,7 +1,8 @@
 ﻿using AllUpMVC.Models;
-using Humanizer.Localisation;
+using AllupP238.Models;
+using AllupWebApplication.Models;
 
-namespace AllUpMVC.ViewModels;
+namespace AllupP238.ViewModels;
 
 public class HomeViewModel
 {

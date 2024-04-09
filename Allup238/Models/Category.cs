@@ -1,16 +1,26 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AllUpMVC.Models;
+using AllupP238.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AllUpMVC.Models
-{
-    public class Category : BaseEntity
-    {
-        [StringLength(50)]
-        public string Name { get; set; }
+namespace AllupWebApplication.Models;
 
-        public List<Product>? Products { get; set; }
-        public string? CategoryImage { get; set; }
-        [NotMapped]
-        public IFormFile? CategoryImageFile { get; set; }
-    }
+public class Category : BaseEntity
+{
+    [Required]
+    [StringLength(100, ErrorMessage = "The Name must be less than 100 characters long.")]
+    public string Name { get; set; }
+
+    [StringLength(500, ErrorMessage = "The Description must be less than 500 characters long.")]
+    public string? Description { get; set; }
+
+    public string? ImageUrl { get; set; }
+
+    [NotMapped]
+    [Display(Name = "Upload Image")]
+    public IFormFile? ImageFile { get; set; }
+
+    // Navigation property to Products
+    public virtual ICollection<Product>? Products { get; set; } = new List<Product>();
 }
+

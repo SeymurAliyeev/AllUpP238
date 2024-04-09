@@ -1,4 +1,5 @@
 ﻿using AllUpMVC.Models;
+using AllupWebApplication.Models;
 
 namespace AllUpMVC.ViewModels
 {

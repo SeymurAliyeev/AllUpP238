@@ -1,17 +1,18 @@
-﻿using Humanizer.Localisation;
+﻿using AllupWebApplication.Models;
+using Humanizer.Localisation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AllUpMVC.Models
 {
-    public class Product : BaseEntity
+    public class Product : AllupP238.Models.BaseEntity
     {
         [StringLength(50)]
         public string Title { get; set; }
         [StringLength(350)]
         public string Desc { get; set; }
         public int? CategoryId { get; set; }
-        public Category? Category { get; set; }
+        public Category Category { get; set; }
 
         public double CostPrice { get; set; }
         public double SalePrice { get; set; }

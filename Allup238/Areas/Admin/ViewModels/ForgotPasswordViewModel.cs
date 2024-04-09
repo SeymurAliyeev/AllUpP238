@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AllUpMVC.Areas.Admin.ViewModels
+namespace AllupP238.Areas.Admin.ViewModels
 {
     public class ForgotPasswordViewModel
     {

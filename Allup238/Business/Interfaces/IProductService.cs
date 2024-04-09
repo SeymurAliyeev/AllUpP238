@@ -1,4 +1,5 @@
-﻿using AllupP238.Models;
+﻿using AllUpMVC.Models;
+using AllupP238.Models;
 using System.Linq.Expressions;
 
 namespace AllupP238.Business.Interfaces

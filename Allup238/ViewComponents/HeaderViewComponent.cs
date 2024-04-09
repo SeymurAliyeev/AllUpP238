@@ -1,4 +1,5 @@
-﻿using AllUpMVC.Business.Interfaces;
+﻿using AllupP238.Business.Interfaces;
+using AllupWebApplication.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AllUpMVC.ViewComponents

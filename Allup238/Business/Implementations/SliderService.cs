@@ -1,7 +1,7 @@
-﻿using AllupP238.Business.Interfaces;
+﻿using AllUpMVC.Extensions;
+using AllupP238.Business.Interfaces;
 using AllupP238.Data;
 using AllupP238.Models;
-using AllupWebApplication.Helpers.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllupP238.Business.Implementations

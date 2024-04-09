@@ -1,4 +1,4 @@
-﻿using AllUpMVC.Models;
+﻿using AllupP238.Models;
 
 namespace AllUpMVC.Extensions
 {
@@ -29,6 +29,11 @@ namespace AllUpMVC.Extensions
             {
                 System.IO.File.Delete(deletePath);
             }
+        }
+
+        internal static Task<string?> SaveFileAsync(IFormFile imageFile, string webRootPath, string folderPath)
+        {
+            throw new NotImplementedException();
         }
     }
 }

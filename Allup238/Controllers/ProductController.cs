@@ -1,25 +1,24 @@
+using AllUpMVC.Models;
+using AllupP238.Business.Interfaces;
+using AllupP238.Data;
+using AllupP238.Helpers.Extensions;
+using AllupWebApplication.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AllUpMVC.Business.Interfaces;
-using AllUpMVC.Data;
-using AllUpMVC.ViewModels;
-using AllUpMVC.Models;
-using AllUpMVC.Helpers;
-using AllUpMVC.Business.Implementations;
 
 namespace AllUpMVC.Controllers;
 
 public class ProductController : Controller
 {
-    private readonly AllUpDbContext _context;
+    private readonly AllupDbContext _context;
     private readonly ICategoryService _CategoryService;
     private readonly IProductService _ProductService;
-    private readonly ISliderService _SliderService;
+    private readonly ISliderServices _SliderService;
 
     public ProductController(
-            AllUpDbContext context, 
+            AllupDbContext context, 
             ICategoryService CategoryService,
-            IProductService ProductService,ISliderService SliderService)
+            IProductService ProductService,ISliderServices SliderService)
     {
         _context = context;
         _CategoryService = CategoryService;
@@ -35,7 +34,7 @@ public class ProductController : Controller
 
     public async Task<IActionResult> Index(int page,int ? CategoryId)
     {
-        ViewBag.Categorys = await _CategoryService.GetAllAsync(x => x.IsDeleted == false);
+        ViewBag.Categories = await _CategoryService.GetAllAsync(x => x.IsDeleted == false);
 
         var datas = _context.Products.AsQueryable();
         if (CategoryId != null)
@@ -46,7 +45,7 @@ public class ProductController : Controller
         {
             datas = datas.Include(x => x.Category).Include(x => x.ProductImages).OrderByDescending(x => x.Id);
         }
-        var paginatedDatas = PaginatedList<Product>.Create(datas,2,page);
+        var paginatedDatas = PaginatedList<Product>.Create(datas, 2, page);
          return View(paginatedDatas);
      
     }

@@ -1,36 +1,35 @@
-﻿using Microsoft.EntityFrameworkCore;
-using AllUpMVC.Business.Interfaces;
-using AllUpMVC.CustomExceptions.ProductExceptions;
-using AllUpMVC.Data;
-using AllUpMVC.Extensions;
+﻿using AllUpMVC.Extensions;
 using AllUpMVC.Models;
+using AllupP238.Business.Interfaces;
+using AllupP238.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Linq.Expressions;
-using AllUpMVC.CustomExceptions.CategoryExceptions;
 
 namespace AllUpMVC.Business.Implementations
 {
     public class ProductService : IProductService
     {
-        private readonly AllUpDbContext _context;
+        private readonly AllupDbContext _context;
         private readonly IWebHostEnvironment _env;
 
-        public ProductService(AllUpDbContext context, IWebHostEnvironment env)
+        public ProductService(AllupDbContext context, IWebHostEnvironment env)
         {
             _context = context;
             _env = env;
         }
-        public async Task CreateAsync(Product Product)
+        public async Task CreateAsync(Models.Product Product)
         {
             if (Product.PosterImageFile.ContentType != "image/jpeg" && Product.PosterImageFile.ContentType != "image/png")
             {
-                throw new ProductInvalidCredentialException("PosterImageFile", "Content type must be png or jpeg!");
+                throw new CustomExceptions.ProductExceptions.ProductInvalidCredentialException("PosterImageFile", "Content type must be png or jpeg!");
             }
 
             if (Product.PosterImageFile.Length > 2097152)
             {
-                throw new ProductInvalidCredentialException("PosterImageFile", "Size must be lower than 2mb!");
+                throw new CustomExceptions.ProductExceptions.ProductInvalidCredentialException("PosterImageFile", "Size must be lower than 2mb!");
             }
-            ProductImage posterImage = new ProductImage()
+            Models.ProductImage posterImage = new Models.ProductImage()
             {
                 Product = Product,
                 ImageUrl = Product.PosterImageFile.SaveFile(_env.WebRootPath, "uploads/Products"),
@@ -40,14 +39,14 @@ namespace AllUpMVC.Business.Implementations
 
             if (Product.HoverImageFile.ContentType != "image/jpeg" && Product.HoverImageFile.ContentType != "image/png")
             {
-                throw new ProductInvalidCredentialException("HoverImageFile", "Content type must be png or jpeg!");
+                throw new CustomExceptions.ProductExceptions.ProductInvalidCredentialException("HoverImageFile", "Content type must be png or jpeg!");
             }
 
             if (Product.HoverImageFile.Length > 2097152)
             {
-                throw new ProductInvalidCredentialException("HoverImageFile", "Size must be lower than 2mb!");
+                throw new CustomExceptions.ProductExceptions.ProductInvalidCredentialException("HoverImageFile", "Size must be lower than 2mb!");
             }
-            ProductImage hoverImage = new ProductImage()
+            Models.ProductImage hoverImage = new Models.ProductImage()
             {
                 Product = Product,
                 ImageUrl = Product.HoverImageFile.SaveFile(_env.WebRootPath, "uploads/Products"),
@@ -62,20 +61,20 @@ namespace AllUpMVC.Business.Implementations
                 {
                     if (imageFile.ContentType != "image/jpeg" && imageFile.ContentType != "image/png")
                     {
-                        throw new ProductInvalidCredentialException("ImageFiles", "Content type must be png or jpeg!");
+                        throw new CustomExceptions.ProductExceptions.ProductInvalidCredentialException("ImageFiles", "Content type must be png or jpeg!");
                     }
 
                     if (imageFile.Length > 2097152)
                     {
-                        throw new ProductInvalidCredentialException("ImageFiles", "Size must be lower than 2mb!");
+                        throw new CustomExceptions.ProductExceptions.ProductInvalidCredentialException("ImageFiles", "Size must be lower than 2mb!");
                     }
-                    ProductImage ProductImage = new ProductImage()
+                    ProductImage productImage = new ProductImage()
                     {
                         Product = Product,
                         ImageUrl = imageFile.SaveFile(_env.WebRootPath, "uploads/Products"),
                         IsPoster = null
                     };
-                    await _context.ProductImages.AddAsync(ProductImage);
+                    await _context.ProductImages.AddAsync(productImage);
                 }
             }
 
@@ -86,7 +85,7 @@ namespace AllUpMVC.Business.Implementations
         public  async Task DeleteAsync(int id)
         {
             var data = await _context.Products.FindAsync(id);
-            if (data is null) throw new CategoryNotFoundException("product not found!");
+            if (data is null) throw new CustomExceptions.CategoryExceptions.CategoryNotFoundException("product not found!");
 
             _context.Remove(data);
             await _context.SaveChangesAsync();
@@ -125,7 +124,7 @@ namespace AllUpMVC.Business.Implementations
             throw new NotImplementedException();
         }
 
-        public Task UpdateAsync(Product Product)
+        public Task UpdateAsync(Product product)
         {
             throw new NotImplementedException();
         }

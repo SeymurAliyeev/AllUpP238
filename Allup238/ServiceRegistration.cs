@@ -1,12 +1,20 @@
-﻿using AllupP238.Business.Implementations;
+﻿using AllUpMVC.Business.Implementations;
 using AllupP238.Business.Interfaces;
+using AllupP238.Business.Implementations;
+using AllupP238.Business.Interfaces;
+using AllupWebApplication.Business.Interfaces;
 
-namespace AllupMVC;
-
-public static class ServiceRegistration
+namespace AllUpMVC
 {
-    public static void AddServices(this IServiceCollection services)
+    public static class ServiceRegistration
     {
-        services.AddScoped<ISliderServices, SliderService>();
+        public static void AddServices(this IServiceCollection services)
+        {
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ISliderServices, SliderService>();
+            services.AddHttpContextAccessor();
+
+        }
     }
 }

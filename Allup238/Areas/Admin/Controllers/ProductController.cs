@@ -1,15 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AllUpMVC.Extensions;
+using AllupP238.Business.Interfaces;
+using AllupP238.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AllUpP238.Business.Interfaces;
-using AllUpP238.CustomExceptions.ProductExceptions;
-using AllUpP238.Data;
-using AllUpP238.Extensions;
-using AllUpP238.Models;
-using AllUpP238.Business.Implementations;
-using AllupP238.Data;
-using AllupP238.Business.Interfaces;
-using AllupP238.Models;
 
 namespace AllUpMVC.Areas.Admin.Controllers
 {
@@ -20,12 +13,12 @@ namespace AllUpMVC.Areas.Admin.Controllers
         private readonly AllupDbContext _context;
         private readonly IWebHostEnvironment _env;
         private readonly IProductService _ProductService;
-        private readonly ICategoryService _CategoryService;
+        private readonly CategoryService _CategoryService;
 
         public ProductController(AllupDbContext context, 
                             IWebHostEnvironment env, 
                             IProductService ProductService, 
-                            ICategoryService CategoryService)
+                            CategoryService CategoryService)
         {
             _context = context;
             _env = env;
@@ -44,7 +37,7 @@ namespace AllUpMVC.Areas.Admin.Controllers
       
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product)
+        public async Task<IActionResult> Create(Models.Product product)
         {
             ViewBag.Categorys = await _CategoryService.GetAllAsync();
             if (!ModelState.IsValid) return View();
@@ -53,7 +46,7 @@ namespace AllUpMVC.Areas.Admin.Controllers
             {
                 await _ProductService.CreateAsync(Product);
             }
-            catch(ProductInvalidCredentialException ex)
+            catch(CustomExceptions.ProductExceptions.ProductInvalidCredentialException ex)
             {
                 ModelState.AddModelError(ex.PropertyName, ex.Message);
                 return View();
@@ -98,7 +91,7 @@ namespace AllUpMVC.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(Product Product)
+        public async Task<IActionResult> Update(Models.Product Product)
         {
             ViewBag.Categorys = await _CategoryService.GetAllAsync();
             if (!ModelState.IsValid) return View();
@@ -109,19 +102,19 @@ namespace AllUpMVC.Areas.Admin.Controllers
             {
                 if (Product.PosterImageFile.ContentType != "image/jpeg" && Product.PosterImageFile.ContentType != "image/png")
                 {
-                    throw new ProductInvalidCredentialException("PosterImageFile", "Content type must be png or jpeg!");
+                    throw new CustomExceptions.ProductExceptions.ProductInvalidCredentialException("PosterImageFile", "Content type must be png or jpeg!");
                 }
 
                 if (Product.PosterImageFile.Length > 2097152)
                 {
-                    throw new ProductInvalidCredentialException("PosterImageFile", "Size must be lower than 2mb!");
+                    throw new CustomExceptions.ProductExceptions.ProductInvalidCredentialException("PosterImageFile", "Size must be lower than 2mb!");
                 }
-                FileManager.DeleteFile(_env.WebRootPath, "uploads/Products", existData.ProductImages.FirstOrDefault(x => x.IsPoster == true)?.ImageUrl);
+                Extensions.FileManager.DeleteFile(_env.WebRootPath, "uploads/Products", existData.ProductImages.FirstOrDefault(x => x.IsPoster == true)?.ImageUrl);
                 if(existData.ProductImages.Any(x=>x.IsPoster == true))
                 {
                     existData.ProductImages.RemoveAll(x => x.IsPoster == true);
                 }
-                ProductImage posterImage = new ProductImage()
+                Models.ProductImage posterImage = new Models.ProductImage()
                 {
                     Product = existData,
                     ImageUrl = Product.PosterImageFile.SaveFile(_env.WebRootPath, "uploads/Products"),
@@ -133,14 +126,14 @@ namespace AllUpMVC.Areas.Admin.Controllers
             {
                 if (Product.HoverImageFile.ContentType != "image/jpeg" && Product.HoverImageFile.ContentType != "image/png")
                 {
-                    throw new ProductInvalidCredentialException("HoverImageFile", "Content type must be png or jpeg!");
+                    throw new CustomExceptions.ProductExceptions.ProductInvalidCredentialException("HoverImageFile", "Content type must be png or jpeg!");
                 }
 
                 if (Product.HoverImageFile.Length > 2097152)
                 {
-                    throw new ProductInvalidCredentialException("HoverImageFile", "Size must be lower than 2mb!");
+                    throw new CustomExceptions.ProductExceptions.ProductInvalidCredentialException("HoverImageFile", "Size must be lower than 2mb!");
                 }
-                ProductImage hoverImage = new ProductImage()
+                Models.ProductImage hoverImage = new Models.ProductImage()
                 {
                     Product = existData,
                     ImageUrl = Product.HoverImageFile.SaveFile(_env.WebRootPath, "uploads/Products"),
@@ -161,22 +154,22 @@ namespace AllUpMVC.Areas.Admin.Controllers
                 {
                     if (imageFile.ContentType != "image/jpeg" && imageFile.ContentType != "image/png")
                     {
-                        throw new ProductInvalidCredentialException("HoverImageFile", "Content type must be png or jpeg!");
+                        throw new CustomExceptions.ProductExceptions.ProductInvalidCredentialException("HoverImageFile", "Content type must be png or jpeg!");
                     }
 
                     if (imageFile.Length > 2097152)
                     {
-                        throw new ProductInvalidCredentialException("HoverImageFile", "Size must be lower than 2mb!");
+                        throw new CustomExceptions.ProductExceptions.ProductInvalidCredentialException("HoverImageFile", "Size must be lower than 2mb!");
                     }
 
-                    ProductImage ProductImage = new ProductImage()
+                    Models.ProductImage productImage = new Models.ProductImage()
                     {
                         ProductId = Product.Id,
                         IsPoster = null,
                         ImageUrl = imageFile.SaveFile(_env.WebRootPath, "uploads/Products")
                     };
 
-                    existData.ProductImages.Add(ProductImage);
+                    existData.ProductImages.Add(productImage);
                 }
             }
             existData.Desc = Product.Desc;

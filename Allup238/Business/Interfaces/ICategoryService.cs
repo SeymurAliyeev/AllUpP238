@@ -1,16 +1,25 @@
-﻿using AllupP238.Models;
-using System.Linq.Expressions;
+﻿
 
-namespace AllupP238.Business.Interfaces
+using AllUpMVC.Models;
+using AllupWebApplication.Models;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+
+namespace AllupWebApplication.Business.Interfaces
 {
     public interface ICategoryService
     {
-        Task<Category> GetByIdAsync(int id);
-        Task<Category> GetSingleAsync(Expression<Func<Category, bool>>? expression = null);
-        Task<List<Category>> GetAllAsync(Expression<Func<Category, bool>>? expression = null, params string[] includes); 
-        Task CreateAsync(Category category);
-        Task UpdateAsync(Category category);
-        Task DeleteAsync(int id);
-        Task SoftDeleteAsync(int id);   
+        Task<IEnumerable<Category>> GetAllCategoriesAsync(Expression<Func<Category, bool>>? filter = null, params string[] includes);
+        Task<IEnumerable<Category>> GetActiveCategoriesAsync(); // This can remain as is if you're only fetching active categories without additional filters.
+        Task<Category> GetCategoryByIdAsync(int id);
+        Task CreateCategoryAsync(Category category, IFormFile imageFile);
+        Task UpdateCategoryAsync(Category category, IFormFile? imageFile = null);
+        Task SoftDeleteCategoryAsync(int id);
+        Task HardDeleteCategoryAsync(int id);
+        Task<dynamic> GetAllAsync(Func<object, bool> value);
     }
 }
+

@@ -1,8 +1,8 @@
-﻿using AllUpMVC.Business.Implementations;
-using AllUpMVC.Business.Interfaces;
-using AllUpMVC.Data;
-using AllUpMVC.Models;
+﻿using AllUpMVC.Models;
 using AllUpMVC.ViewModels;
+using AllupP238.Business.Interfaces;
+using AllupP238.Data;
+using AllupP238.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -11,13 +11,13 @@ namespace AllUpMVC.Controllers
     public class ShopController : Controller
     {
         private readonly IProductService _ProductService;
-        private readonly AllUpDbContext _context;
+        private readonly AllupDbContext _context;
         private List<Basketitem> _basket = new List<Basketitem>();
         private const string BasketCookieName = "Basket";
 
         public ShopController(
                 IProductService ProductService,
-                AllUpDbContext context)
+                AllupDbContext context)
         {
             _ProductService = ProductService;
             _context = context;

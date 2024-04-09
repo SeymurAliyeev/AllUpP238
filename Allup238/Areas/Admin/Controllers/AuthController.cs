@@ -1,17 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using AllUpP238.Areas.Admin.ViewModels;
-using AllUpP238.Models;
 
-namespace AllUpMVC.Areas.Admin.Controllers
+namespace AllupP238.Areas.Admin.Controllers
 {
     [Area("admin")]
     public class AuthController : Controller
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
+        private readonly UserManager<Models.AppUser> _userManager;
+        private readonly SignInManager<Models.AppUser> _signInManager;
 
-        public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public AuthController(UserManager<Models.AppUser> userManager, SignInManager<Models.AppUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -28,10 +26,10 @@ namespace AllUpMVC.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(AdminLoginViewModel adminVM)
+        public async Task<IActionResult> Login(ViewModels.AdminLoginViewModel adminVM)
         {
             if (!ModelState.IsValid) return View();
-            AppUser admin = null;
+            Models.AppUser admin = null;
 
             admin = await _userManager.FindByNameAsync(adminVM.Username);
 
@@ -61,7 +59,7 @@ namespace AllUpMVC.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotPasswordVM)
+        public async Task<IActionResult> ForgotPassword(ViewModels.ForgotPasswordViewModel forgotPasswordVM)
         {
             if (!ModelState.IsValid) return View();
             var user = await _userManager.FindByEmailAsync(forgotPasswordVM.Email);
@@ -92,7 +90,7 @@ namespace AllUpMVC.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetPasswordViewModel)
+        public async Task<IActionResult> ResetPassword(ViewModels.ResetPasswordViewModel resetPasswordViewModel)
         {
             if (!ModelState.IsValid) return View();
 

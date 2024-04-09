@@ -1,6 +1,4 @@
-﻿using AllUpMVC.Data;
-using AllUpMVC.Models;
-using AllUpMVC.ViewModels;
+﻿using AllupP238.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +6,11 @@ namespace AllUpMVC.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly AllUpDbContext _context;
-        private readonly SignInManager<AppUser> _signInManager;
+        private readonly UserManager<Models.AppUser> _userManager;
+        private readonly AllupDbContext _context;
+        private readonly SignInManager<Models.AppUser> _signInManager;
 
-        public AccountController(UserManager<AppUser> userManager, AllUpDbContext context, SignInManager<AppUser> signInManager)
+        public AccountController(UserManager<Models.AppUser> userManager, AllupDbContext context, SignInManager<Models.AppUser> signInManager)
         {
             _userManager = userManager;
             _context = context;
@@ -34,10 +32,10 @@ namespace AllUpMVC.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Login(UserLoginViewModel userVM)
+        public async Task<IActionResult> Login(ViewModels.UserLoginViewModel userVM)
         {
             if (!ModelState.IsValid) return View();
-            AppUser user = null;
+            Models.AppUser user = null;
 
             user = await _userManager.FindByNameAsync(userVM.Username);
 
@@ -59,15 +57,15 @@ namespace AllUpMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(UserRegisterViewModel model)
+        public async Task<IActionResult> Register(ViewModels.UserRegisterViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("ModelOnly", "Melumatlar duzgun yazilmayib");
 
                 return View(model);
-            } 
-            AppUser member = new AppUser()
+            }
+            Models.AppUser member = new Models.AppUser()
             {
                 Fullname = model.Fullname,
                 UserName = model.Username,

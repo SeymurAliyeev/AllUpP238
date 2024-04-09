@@ -1,6 +1,6 @@
 ﻿namespace AllUpMVC.Models
 {
-    public class ProductImage : BaseEntity
+    public class ProductImage : AllupP238.Models.BaseEntity
     {
         public int ProductId { get; set; }
         public string ImageUrl { get; set; }
