@@ -1,12 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PustokMVC.Models
+namespace AllUpMVC.Models
 {
-    public class Genre : BaseEntity
+    public class Category : BaseEntity
     {
         [StringLength(50)]
         public string Name { get; set; }
 
-        public List<Product>? Books { get; set; }
+        public List<Product>? Products { get; set; }
+        public string? CategoryImage { get; set; }
+        [NotMapped]
+        public IFormFile? CategoryImageFile { get; set; }
     }
 }

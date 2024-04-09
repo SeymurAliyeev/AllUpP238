@@ -1,44 +1,34 @@
-﻿namespace AllupWebApplication.Helpers.Extensions;
+﻿using AllUpMVC.Models;
 
-public static class FileManager
+namespace AllUpMVC.Extensions
 {
-    // Adds asynchronous operation for saving files
-    public static async Task<string> SaveFileAsync(this IFormFile file, string rootPath, string folderName)
+    public static class FileManager
     {
-        if (file == null || file.Length == 0)
-            throw new ArgumentException("File is empty or null.", nameof(file));
-
-        // Ensure the file is an image
-        if (!file.ContentType.StartsWith("image/"))
-            throw new ArgumentException("File is not an image.", nameof(file));
-
-        // Truncate the file name if it exceeds 64 characters and prepend a GUID
-        string fileName = Path.GetFileName(file.FileName);
-        fileName = fileName.Length > 64 ? fileName.Substring(fileName.Length - 64, 64) : fileName;
-        fileName = Guid.NewGuid() + "_" + fileName; // Ensures uniqueness
-
-        string path = Path.Combine(rootPath, folderName, fileName);
-
-        // Creates the directory if it doesn't exist
-        Directory.CreateDirectory(Path.Combine(rootPath, folderName));
-
-        using (var stream = new FileStream(path, FileMode.Create))
+        
+        public static string SaveFile(this IFormFile file,string rootPath, string folderName)
         {
-            await file.CopyToAsync(stream);
+            string fileName = file.FileName;
+            fileName = fileName.Length > 64 ? fileName.Substring(fileName.Length - 64, 64) : fileName;
+            fileName = Guid.NewGuid().ToString() + fileName; // 100
+
+            string path = Path.Combine(rootPath, folderName, fileName);
+
+            using (FileStream stream = new FileStream(path, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+
+            return fileName;
         }
 
-        return fileName;
-    }
-
-    public static void DeleteFile(string rootPath, string folderName, string fileName)
-    {
-        if (string.IsNullOrWhiteSpace(fileName))
-            return;
-
-        string deletePath = Path.Combine(rootPath, folderName, fileName);
-        if (File.Exists(deletePath))
+        public static void DeleteFile(string rootPath, string folderName, string fileName)
         {
-            File.Delete(deletePath);
+            string deletePath = Path.Combine(rootPath, folderName, fileName);
+
+            if (System.IO.File.Exists(deletePath))
+            {
+                System.IO.File.Delete(deletePath);
+            }
         }
     }
 }

@@ -1,22 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using AllupP238.Business.Interfaces;
+﻿using AllUpMVC.Business.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
-namespace PustokMVC.ViewComponents
+namespace AllUpMVC.ViewComponents
 {
     public class HeaderViewComponent : ViewComponent
     {
         private readonly ICategoryService _CategoryService;
-
-        public HeaderViewComponent(ICategoryService CategoryService)
+        public HeaderViewComponent(ICategoryService categoryService)
         {
             _CategoryService = categoryService;
-        }
 
+        }
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var categories = await _categoryService.GetAllAsync(null);
-
-            return View(categories);
+            var categorys = await _CategoryService.GetAllAsync(null);
+            return View(categorys);
         }
     }
 }

@@ -1,52 +1,57 @@
-﻿using AllupP238.Business.Interfaces;
-using AllupP238.Data;
-using AllupWebApplication.Helpers.Extensions;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PustokMVC.Models;
+using AllUpP238.Business.Interfaces;
+using AllUpP238.CustomExceptions.ProductExceptions;
+using AllUpP238.Data;
+using AllUpP238.Extensions;
+using AllUpP238.Models;
+using AllUpP238.Business.Implementations;
+using AllupP238.Data;
+using AllupP238.Business.Interfaces;
+using AllupP238.Models;
 
-namespace PustokMVC.Areas.Admin.Controllers
+namespace AllUpMVC.Areas.Admin.Controllers
 {
     [Area("admin")]
-    [Authorize]
+   // [Authorize]
     public class ProductController : Controller
     {
         private readonly AllupDbContext _context;
         private readonly IWebHostEnvironment _env;
-        private readonly IProductService _productService;
-        private readonly ICategoryService _categoryService;
+        private readonly IProductService _ProductService;
+        private readonly ICategoryService _CategoryService;
 
         public ProductController(AllupDbContext context, 
-                            IWebHostEnvironment env,
-                            IProductService productService,
-                            ICategoryService categoryService)
+                            IWebHostEnvironment env, 
+                            IProductService ProductService, 
+                            ICategoryService CategoryService)
         {
             _context = context;
             _env = env;
-            _productService = productService;
-            _categoryService = categoryService;
+            _ProductService = ProductService;
+            _CategoryService = CategoryService;
         }
         public async Task<IActionResult> Index()
-            => View(await _productService.GetAllAsync(null,"Author","Genre","BookImages"));
+            => View(await _ProductService.GetAllAsync(null,"Category","ProductImages"));
 
         public async Task<IActionResult> Create()
         {
-            ViewBag.Genres = await _context.Categories.ToListAsync();
+            ViewBag.Categorys = await _context.Categories.ToListAsync();
 
             return View();
         }
-
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Models.Product product)
+        public async Task<IActionResult> Create(Product product)
         {
-            ViewBag.Genres = await _categoryService.GetAllAsync();
+            ViewBag.Categorys = await _CategoryService.GetAllAsync();
             if (!ModelState.IsValid) return View();
 
             try
             {
-                await _productService.CreateAsync(product);
+                await _ProductService.CreateAsync(Product);
             }
             catch(ProductInvalidCredentialException ex)
             {
@@ -61,14 +66,27 @@ namespace PustokMVC.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                await _ProductService.DeleteAsync(id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
 
         public async Task<IActionResult> Update(int id)
         {
-            ViewBag.Genres = await _categoryService.GetAllAsync();
-            Models.Product? product = null;
+            ViewBag.Categorys = await _CategoryService.GetAllAsync();
+            Product? Product = null;
             try
             {
-                product = await _productService.GetSingleAsync(x=>x.Id == id,"Category","ProductImages");
+                Product = await _ProductService.GetSingleAsync(x=>x.Id == id,"Category","ProductImages");
             }
             catch (Exception)
             {
@@ -76,70 +94,70 @@ namespace PustokMVC.Areas.Admin.Controllers
                 throw;
             }
 
-            return View(product);
+            return View(Product);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(Product product)
+        public async Task<IActionResult> Update(Product Product)
         {
-            ViewBag.Genres = await _categoryService.GetAllAsync();
+            ViewBag.Categorys = await _CategoryService.GetAllAsync();
             if (!ModelState.IsValid) return View();
 
-            Product existData = await _productService.GetSingleAsync(x => x.Id == product.Id, "Category", "ProductImages");
+            Product existData = await _ProductService.GetSingleAsync(x => x.Id == Product.Id,  "Category", "ProductImages");
 
-            if(product.PosterImageFile is not null)
+            if (Product.PosterImageFile is not null)
             {
-                if (product.PosterImageFile.ContentType != "image/jpeg" && product.PosterImageFile.ContentType != "image/png")
+                if (Product.PosterImageFile.ContentType != "image/jpeg" && Product.PosterImageFile.ContentType != "image/png")
                 {
                     throw new ProductInvalidCredentialException("PosterImageFile", "Content type must be png or jpeg!");
                 }
 
-                if (product.PosterImageFile.Length > 2097152)
+                if (Product.PosterImageFile.Length > 2097152)
                 {
                     throw new ProductInvalidCredentialException("PosterImageFile", "Size must be lower than 2mb!");
                 }
-                FileManager.DeleteFile(_env.WebRootPath, "uploads/books", existData.ProductImages.FirstOrDefault(x => x.IsPoster == true)?.ImageUrl);
+                FileManager.DeleteFile(_env.WebRootPath, "uploads/Products", existData.ProductImages.FirstOrDefault(x => x.IsPoster == true)?.ImageUrl);
                 if(existData.ProductImages.Any(x=>x.IsPoster == true))
                 {
                     existData.ProductImages.RemoveAll(x => x.IsPoster == true);
                 }
                 ProductImage posterImage = new ProductImage()
                 {
-                    Book = existData,
-                    ImageUrl = product.PosterImageFile.SaveFile(_env.WebRootPath, "uploads/books"),
+                    Product = existData,
+                    ImageUrl = Product.PosterImageFile.SaveFile(_env.WebRootPath, "uploads/Products"),
                     IsPoster = true
                 };
                 await _context.ProductImages.AddAsync(posterImage);
             }
-            if(product.HoverImageFile is not null)
+            if(Product.HoverImageFile is not null)
             {
-                if (product.HoverImageFile.ContentType != "image/jpeg" && product.HoverImageFile.ContentType != "image/png")
+                if (Product.HoverImageFile.ContentType != "image/jpeg" && Product.HoverImageFile.ContentType != "image/png")
                 {
                     throw new ProductInvalidCredentialException("HoverImageFile", "Content type must be png or jpeg!");
                 }
 
-                if (product.HoverImageFile.Length > 2097152)
+                if (Product.HoverImageFile.Length > 2097152)
                 {
                     throw new ProductInvalidCredentialException("HoverImageFile", "Size must be lower than 2mb!");
                 }
                 ProductImage hoverImage = new ProductImage()
                 {
-                    Book = existData,
-                    ImageUrl = product.HoverImageFile.SaveFile(_env.WebRootPath, "uploads/books"),
+                    Product = existData,
+                    ImageUrl = Product.HoverImageFile.SaveFile(_env.WebRootPath, "uploads/Products"),
                     IsPoster = false
                 };
                 await _context.ProductImages.AddAsync(hoverImage);
             }
 
-            foreach (var imageFile in existData.BookImages.Where(bi => !book.BookImageIds.Contains(bi.Id) && bi.IsPoster == null))
+            foreach (var imageFile in existData.ProductImages.Where(bi => !Product.ProductImageIds.Contains(bi.Id) && bi.IsPoster == null))
             {
-                FileManager.DeleteFile(_env.WebRootPath, "uploads/books", imageFile?.ImageUrl);
+                FileManager.DeleteFile(_env.WebRootPath, "uploads/Products", imageFile?.ImageUrl);
             }
-            existData.BookImages.RemoveAll(bi => !book.BookImageIds.Contains(bi.Id) && bi.IsPoster == null);
+            existData.ProductImages.RemoveAll(bi => !Product.ProductImageIds.Contains(bi.Id) && bi.IsPoster == null);
 
-            if(product.ImageFiles is not null)
+            if(Product.ImageFiles is not null)
             {
-                foreach (var imageFile in product.ImageFiles)
+                foreach (var imageFile in Product.ImageFiles)
                 {
                     if (imageFile.ContentType != "image/jpeg" && imageFile.ContentType != "image/png")
                     {
@@ -151,26 +169,25 @@ namespace PustokMVC.Areas.Admin.Controllers
                         throw new ProductInvalidCredentialException("HoverImageFile", "Size must be lower than 2mb!");
                     }
 
-                    ProductImage bookImage = new ProductImage()
+                    ProductImage ProductImage = new ProductImage()
                     {
-                        ProductId = product.Id,
+                        ProductId = Product.Id,
                         IsPoster = null,
-                        ImageUrl = imageFile.SaveFile(_env.WebRootPath, "uploads/books")
+                        ImageUrl = imageFile.SaveFile(_env.WebRootPath, "uploads/Products")
                     };
 
-                    existData.ProductImages.Add(bookImage);
+                    existData.ProductImages.Add(ProductImage);
                 }
             }
-            existData.Desc = product.Desc;
-            existData.Title = product.Title;
-            existData.IsNew = product.IsNew;
-            existData.CategoryId = product.CategoryId;
-            existData.ProductCode = product.ProductCode;
-            existData.CostPrice = product.CostPrice;
-            existData.SalePrice = product.SalePrice;
-            existData.IsDeleted = product.IsDeleted;
-            existData.IsBestSeller = product.IsBestSeller;
-            existData.DiscountPercent = product.DiscountPercent;
+            existData.Desc = Product.Desc;
+            existData.Title = Product.Title;
+            existData.IsNew = Product.IsNew;
+            existData.CategoryId = Product.CategoryId;
+            existData.ProductCode = Product.ProductCode;
+            existData.CostPrice = Product.CostPrice;
+            existData.SalePrice = Product.SalePrice;
+            existData.IsDeleted = Product.IsDeleted;
+            existData.DiscountPercent = Product.DiscountPercent;
             existData.ModifiedDate = DateTime.UtcNow.AddHours(4);
 
             await _context.SaveChangesAsync();

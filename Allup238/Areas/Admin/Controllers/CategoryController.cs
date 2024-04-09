@@ -1,36 +1,37 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AllupP238.Business.Interfaces;
 using AllupP238.CustomExceptions.Common;
-using AllupP238.CustomExceptions.ProductExceptions;
+using AllupP238.CustomExceptions.CategoryExceptions;
 using AllupP238.Models;
+using AllupP238.Business.Interfaces;
 
-namespace PustokMVC.Areas.Admin.Controllers
+namespace AllUpMVC.Areas.Admin.Controllers
 {
     [Area("admin")]
     public class CategoryController : Controller
     {
-        private readonly IProductService _ProductService;
+        private readonly ICategoryService _CategoryService;
 
-        public CategoryController(IProductService ProductService)
+        public CategoryController(ICategoryService CategoryService)
         {
-            _ProductService = ProductService;
+            _CategoryService = CategoryService;
         }
 
         public async Task<IActionResult> Index()
-            => View(await _ProductService.GetAllAsync(x=>x.IsDeleted == false && x.Name == "Sci-Fi","Books"));
+            => View(await _CategoryService.GetAllAsync(x=>x.IsDeleted == false,"Products"));
 
         public IActionResult Create()
             => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Models.Product Product)
+        public async Task<IActionResult> Create(Category Category)
         {
             if (!ModelState.IsValid) return View();
 
             try
             {
-                await _ProductService.CreateAsync(Product);
+                await _CategoryService.CreateAsync(Category);
             }
             catch (NameAlreadyExistException ex)
             {
@@ -48,12 +49,12 @@ namespace PustokMVC.Areas.Admin.Controllers
 
         public async Task<IActionResult> Update(int id)
         {
-            Product Product = null;
+            Category Category = null;
             try
             {
-                Product = await _ProductService.GetByIdAsync(id);
+                Category = await _CategoryService.GetByIdAsync(id);
             }
-            catch (ProductNotFoundException ex)
+            catch (CategoryNotFoundException ex)
             {
                 return View("Error");
             }
@@ -63,24 +64,24 @@ namespace PustokMVC.Areas.Admin.Controllers
                 throw;
             }
 
-            return View(Product);
+            return View(Category);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(Product Product)
+        public async Task<IActionResult> Update(Category Category)
         {
             if (!ModelState.IsValid) return View();
 
             try
             {
-                await _ProductService.UpdateAsync(Product);
+                await _CategoryService.UpdateAsync(Category);
             }
             catch (NameAlreadyExistException ex)
             {
                 ModelState.AddModelError(ex.PropertyName, ex.Message);
                 return View();
             }
-            catch (ProductNotFoundException ex)
+            catch (CategoryNotFoundException ex)
             {
                 return View("Error");
             }
@@ -97,9 +98,17 @@ namespace PustokMVC.Areas.Admin.Controllers
         {
             try
             {
-                await _ProductService.DeleteAsync(id);
+                bool status=await _CategoryService.CheckChildAsync(id);
+                if (status)
+                {
+                    await _CategoryService.DeleteAsync(id);
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
-            catch (ProductNotFoundException)
+            catch (CategoryNotFoundException)
             {
                 return NotFound();
             }
@@ -109,6 +118,5 @@ namespace PustokMVC.Areas.Admin.Controllers
             }
             return Ok();
         }
-             
     }
 }

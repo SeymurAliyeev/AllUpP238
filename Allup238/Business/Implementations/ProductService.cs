@@ -1,111 +1,117 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PustokMVC.Business.Interfaces;
-using PustokMVC.CustomExceptions.BookExceptions;
-using PustokMVC.Data;
-using PustokMVC.Extensions;
-using PustokMVC.Models;
+using AllUpMVC.Business.Interfaces;
+using AllUpMVC.CustomExceptions.ProductExceptions;
+using AllUpMVC.Data;
+using AllUpMVC.Extensions;
+using AllUpMVC.Models;
 using System.Linq.Expressions;
+using AllUpMVC.CustomExceptions.CategoryExceptions;
 
-namespace PustokMVC.Business.Implementations
+namespace AllUpMVC.Business.Implementations
 {
-    public class ProductService : IBookService
+    public class ProductService : IProductService
     {
-        private readonly PustokDbContext _context;
+        private readonly AllUpDbContext _context;
         private readonly IWebHostEnvironment _env;
 
-        public ProductService(PustokDbContext context, IWebHostEnvironment env)
+        public ProductService(AllUpDbContext context, IWebHostEnvironment env)
         {
             _context = context;
             _env = env;
         }
-        public async Task CreateAsync(Book book)
+        public async Task CreateAsync(Product Product)
         {
-            if (book.PosterImageFile.ContentType != "image/jpeg" && book.PosterImageFile.ContentType != "image/png")
+            if (Product.PosterImageFile.ContentType != "image/jpeg" && Product.PosterImageFile.ContentType != "image/png")
             {
-                throw new BookInvalidCredentialException("PosterImageFile", "Content type must be png or jpeg!");
+                throw new ProductInvalidCredentialException("PosterImageFile", "Content type must be png or jpeg!");
             }
 
-            if (book.PosterImageFile.Length > 2097152)
+            if (Product.PosterImageFile.Length > 2097152)
             {
-                throw new BookInvalidCredentialException("PosterImageFile", "Size must be lower than 2mb!");
+                throw new ProductInvalidCredentialException("PosterImageFile", "Size must be lower than 2mb!");
             }
-            BookImage posterImage = new BookImage()
+            ProductImage posterImage = new ProductImage()
             {
-                Book = book,
-                ImageUrl = book.PosterImageFile.SaveFile(_env.WebRootPath, "uploads/books"),
+                Product = Product,
+                ImageUrl = Product.PosterImageFile.SaveFile(_env.WebRootPath, "uploads/Products"),
                 IsPoster = true
             };
-            await _context.BookImages.AddAsync(posterImage);
+            await _context.ProductImages.AddAsync(posterImage);
 
-            if (book.HoverImageFile.ContentType != "image/jpeg" && book.HoverImageFile.ContentType != "image/png")
+            if (Product.HoverImageFile.ContentType != "image/jpeg" && Product.HoverImageFile.ContentType != "image/png")
             {
-                throw new BookInvalidCredentialException("HoverImageFile", "Content type must be png or jpeg!");
+                throw new ProductInvalidCredentialException("HoverImageFile", "Content type must be png or jpeg!");
             }
 
-            if (book.HoverImageFile.Length > 2097152)
+            if (Product.HoverImageFile.Length > 2097152)
             {
-                throw new BookInvalidCredentialException("HoverImageFile", "Size must be lower than 2mb!");
+                throw new ProductInvalidCredentialException("HoverImageFile", "Size must be lower than 2mb!");
             }
-            BookImage hoverImage = new BookImage()
+            ProductImage hoverImage = new ProductImage()
             {
-                Book = book,
-                ImageUrl = book.HoverImageFile.SaveFile(_env.WebRootPath, "uploads/books"),
+                Product = Product,
+                ImageUrl = Product.HoverImageFile.SaveFile(_env.WebRootPath, "uploads/Products"),
                 IsPoster = false
             };
-            await _context.BookImages.AddAsync(hoverImage);
+            await _context.ProductImages.AddAsync(hoverImage);
 
 
-            if (book.ImageFiles is not null)
+            if (Product.ImageFiles is not null)
             {
-                foreach (var imageFile in book.ImageFiles)
+                foreach (var imageFile in Product.ImageFiles)
                 {
                     if (imageFile.ContentType != "image/jpeg" && imageFile.ContentType != "image/png")
                     {
-                        throw new BookInvalidCredentialException("ImageFiles", "Content type must be png or jpeg!");
+                        throw new ProductInvalidCredentialException("ImageFiles", "Content type must be png or jpeg!");
                     }
 
                     if (imageFile.Length > 2097152)
                     {
-                        throw new BookInvalidCredentialException("ImageFiles", "Size must be lower than 2mb!");
+                        throw new ProductInvalidCredentialException("ImageFiles", "Size must be lower than 2mb!");
                     }
-                    BookImage bookImage = new BookImage()
+                    ProductImage ProductImage = new ProductImage()
                     {
-                        Book = book,
-                        ImageUrl = imageFile.SaveFile(_env.WebRootPath, "uploads/books"),
+                        Product = Product,
+                        ImageUrl = imageFile.SaveFile(_env.WebRootPath, "uploads/Products"),
                         IsPoster = null
                     };
-                    await _context.BookImages.AddAsync(bookImage);
+                    await _context.ProductImages.AddAsync(ProductImage);
                 }
             }
 
-            await _context.Books.AddAsync(book);
+            await _context.Products.AddAsync(Product);
             await _context.SaveChangesAsync();
         }
 
-        public Task DeleteAsync(int id)
+        public  async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var data = await _context.Products.FindAsync(id);
+            if (data is null) throw new CategoryNotFoundException("product not found!");
+
+            _context.Remove(data);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Book>> GetAllAsync(Expression<Func<Book, bool>>? expression = null, params string[] includes)
+        public async Task<List<Product>> GetAllAsync(Expression<Func<Product, bool>>? expression = null, params string[] includes)
         {
-            var query = _context.Books.AsQueryable();
+            var query = _context.Products.AsQueryable();
 
             query = _getIncludes(query, includes);
 
             return expression is not null
-                        ? await query.Where(expression).ToListAsync()
-                        : await query.ToListAsync();
+                        ? await query.Where(expression).OrderByDescending(x => x.Id).ToListAsync()
+                        : await query.OrderByDescending(x => x.Id).ToListAsync();
         }
 
-        public Task<Book> GetByIdAsync(int id)
+        public async Task<Product> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var query = _context.Products.Include(x=>x.ProductImages).Where(x=>x.Id==id).AsQueryable();
+            return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<Book> GetSingleAsync(Expression<Func<Book, bool>>? expression = null, params string[] includes)
+        public async Task<Product> GetSingleAsync(Expression<Func<Product, bool>>? expression = null, params string[] includes)
         {
-            var query = _context.Books.AsQueryable();
+            var query = _context.Products.AsQueryable();
 
             query = _getIncludes(query, includes);
 
@@ -119,12 +125,12 @@ namespace PustokMVC.Business.Implementations
             throw new NotImplementedException();
         }
 
-        public Task UpdateAsync(Book Book)
+        public Task UpdateAsync(Product Product)
         {
             throw new NotImplementedException();
         }
 
-        private IQueryable<Book> _getIncludes(IQueryable<Book> query, params string[] includes)
+        private IQueryable<Product> _getIncludes(IQueryable<Product> query, params string[] includes)
         {
             if (includes is not null)
             {
